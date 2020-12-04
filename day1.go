@@ -19,6 +19,21 @@ func findSum(ent []int) int {
 	return -1
 }
 
+func part2(ent []int) int {
+	//brute force
+	for i:=0; i < len(ent); i++{
+		for j :=0; j < len(ent); j++{
+			for s :=0; s<len(ent); s++{
+				sum := ent[i] + ent[j] + ent[s]
+				if sum == 2020{
+					return ent[i] * ent[j] * ent[s]
+ 
+				}
+			}
+		}
+	}
+	return -1
+}
 func main() {
 	test := []int{1470,
 		1577,
@@ -223,4 +238,6 @@ func main() {
 	}
 	ans := findSum(test)
 	fmt.Println(ans)
+	p2 := part2(test)
+	fmt.Println(p2)
 }
