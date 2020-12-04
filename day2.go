@@ -21,13 +21,13 @@ func validPassword(pwrds []string) (int, error) {
 		//tmp[3] "hfeq234hrju" password
 
 		nums := strings.Split(tmp[0], "-")
-		min, err = strconv.Atoi(string(nums[0]))
+		min, err = strconv.Atoi(nums[0])
 
 		if err != nil {
 			return 0, fmt.Errorf("Error getting min: %s", err)
 		}
 
-		max, err = strconv.Atoi(string(nums[1]))
+		max, err = strconv.Atoi(nums[1])
 		if err != nil {
 			return 0, fmt.Errorf("Error getting max; %s", err)
 		}
@@ -36,13 +36,7 @@ func validPassword(pwrds []string) (int, error) {
 		key := tmp[2][0]
 
 		//validate password
-		count := 0
-		for _, char := range tmp[2] {
-			if char == rune(key) {
-				count++
-			}
-		}
-
+		count := strings.Count(tmp[2], string(key))
 		if count >= min && count <= max {
 			wrdcount++
 			fmt.Printf("%s is valid with %d %c's, max: %d, min: %d\n", tmp[2], count, key, max, min)
@@ -102,6 +96,7 @@ func main() {
 		"4-5 s: pxmsks",
 		"3-5 q: dxqqwvz",
 		"1-8 g: mgdggghrgngggcr",
+
 		"1-3 m: mwmcmrmtmmmmmmmmm",
 		"15-18 w: rjczjghkbqtgxswvpww",
 		"4-5 x: bsnxd",
