@@ -7,16 +7,6 @@ import (
 	"strings"
 )
 
-type passport struct {
-	byr int
-	iyr int
-	eyr int
-	hgt string
-	hcl string
-	ecl string
-	pid int
-	cid int
-}
 
 //for a passport to be valid it must contain all fields or all fields except country ID
 //returns count of valid passports
