@@ -1,60 +1,61 @@
 package main
 
-
 import (
 	"fmt"
 	"strings"
-	"time"
-	)
+)
 
-type passport struct{
+type passport struct {
 	byr int
 	iyr int
 	eyr int
 	hgt string
 	hcl string
 	ecl string
-	pid int 
-	cid int 
+	pid int
+	cid int
 }
 
 //for a passport to be valid it must contain all fields or all fields except country ID
 //returns count of valid passports
-func valid(p []map[string]string) int{
-count := 0
+func valid(p []map[string]string) int {
 	p1 := 0
 	req := []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 	for _, pass := range p {
-			for _, r := range req{
-				_, ok := pass[r]
-				if !ok{
-					continue
-				}
+		count := 0
+		for _, r := range req {
+			_, ok := pass[r]
+			if !ok {
+				continue
+			}
 
-				count++
-			}
-			if count == 7{
-				p1++
-			}
+			count++
 		}
+		if count == 7 {
+			p1++
+		}
+	}
 	return p1
 }
 
-func readData(s string) []map[string]string{
+func readData(s string) []map[string]string {
 	plines := strings.Split(s, "\n\n")
 	var passports []map[string]string
-	for i, p := range plines{
-		passports = append(passports, make(map[string]string))
-		for _, line := range strings.Split(p, " "){
+	for _, p := range plines {
+		passport := make(map[string]string)
+		p = strings.ReplaceAll(p, "\n", " ")
+		for _, line := range strings.Split(p, " ") {
 
-			tmp := strings.Split(line, ":")
-			passports[i][tmp[0]] = tmp[1]
+				tmp := strings.Split(line, ":")
+			passport[tmp[0]] = tmp[1]
 		}
+		passports = append(passports, passport)
 	}
+	fmt.Println(passports)
 	return passports
 }
-func main(){
-	data := `ecl:#eef340 eyr:2023 hcl:#c0946f pid:244684338 iyr:2020 cid:57 byr:1969 hgt:152cm
+func main() {
+	const data = `ecl:#eef340 eyr:2023 hcl:#c0946f pid:244684338 iyr:2020 cid:57 byr:1969 hgt:152cm
 
 pid:303807545 cid:213 ecl:gry hcl:#fffffd
 eyr:2038 byr:1951
@@ -1078,12 +1079,11 @@ eyr:2021
 hcl:#602927 iyr:2014
 pid:274974402 hgt:183cm`
 
-//t1 := strings.Split(data, "\n")
-//fmt.Println(t1)
-time.Sleep(10 * time.Second)
-//t2 := strings.Split(data, "\n\n")
-//fmt.Println(t2)
-a := readData(data)
-part1 := valid(a)
-fmt.Println(part1)
+	//t1 := strings.Split(data, "\n")
+	//fmt.Println(t1)
+	//t2 := strings.Split(data, "\n\n")
+	//fmt.Println(t2)
+	a := readData(data)
+	part1 := valid(a)
+	fmt.Println(part1)
 }
