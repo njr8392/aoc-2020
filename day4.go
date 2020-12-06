@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -20,13 +22,76 @@ type passport struct {
 //returns count of valid passports
 func valid(p []map[string]string) int {
 	p1 := 0
+	p2 := 0
 	req := []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 	for _, pass := range p {
 		count := 0
+		count2 := 0
 		for _, r := range req {
-			_, ok := pass[r]
+			val, ok := pass[r]
 			if !ok {
 				continue
+			}
+
+			switch r {
+			case "byr":
+				num, err := strconv.Atoi(val)
+				if err != nil {
+					fmt.Println(err)
+				}
+				if num >= 1920 && num <= 2002 {
+					count2++
+				}
+
+			case "iyr":
+				num, err := strconv.Atoi(val)
+				if err != nil {
+					fmt.Println(err)
+				}
+				if num >= 2010 && num <= 2020 {
+					count2++
+				}
+
+			case "eyr":
+				num, err := strconv.Atoi(val)
+				if err != nil {
+					fmt.Println(err)
+				}
+				if num >= 2020 && num <= 2030 {
+					count2++
+				}
+
+			case "hgt":
+				cm := strings.Contains(val, "cm")
+				in := strings.Contains(val, "in")
+
+				if cm || in {
+					num, err := strconv.Atoi(val[:len(val)-2])
+					if err != nil {
+						fmt.Println(err)
+						continue
+
+					}
+					if cm && num >= 150 && num <= 193 || in && num >= 59 && num <= 76 {
+						count2++
+					}
+				}
+
+			case "hcl":
+				if regexp.MustCompile(`^#[0-9a-f]{6}`).MatchString(val) {
+					count2++
+				}
+
+			case "ecl":
+				switch val {
+				case "blu", "amb", "brn", "gry", "grn", "hzl", "oth":
+					count2++
+				}
+			case "pid":
+				if regexp.MustCompile(`^[0-9]{9}$`).MatchString(val) {
+					count2++
+				}
+
 			}
 
 			count++
@@ -34,7 +99,13 @@ func valid(p []map[string]string) int {
 		if count == 7 {
 			p1++
 		}
+		if count2 == 7 {
+			p2++
+		}
+
 	}
+
+	fmt.Printf("Solution to part1 is: %d\n Solution to part 2 is: %d\n", p1, p2)
 	return p1
 }
 
@@ -46,12 +117,11 @@ func readData(s string) []map[string]string {
 		p = strings.ReplaceAll(p, "\n", " ")
 		for _, line := range strings.Split(p, " ") {
 
-				tmp := strings.Split(line, ":")
+			tmp := strings.Split(line, ":")
 			passport[tmp[0]] = tmp[1]
 		}
 		passports = append(passports, passport)
 	}
-	fmt.Println(passports)
 	return passports
 }
 func main() {
