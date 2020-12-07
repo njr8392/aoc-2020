@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 func decode(s string) (int, int) {
@@ -60,17 +61,36 @@ func decode(s string) (int, int) {
 	return rownum, colnum
 }
 
-func maxID(ids []string)int{
+func getIDs(ids []string)(int, int){
 	maxid := 0
+	myid := 0 
+	m := make(map[string]int)
+
 	for _, id := range ids{
 		row, col := decode(id)
+		srow  := strconv.Itoa(row)
+		scol := strconv.Itoa(col)
+		seat := srow + " " + scol
 		id := row * 8 + col
+		m[seat] =  id
 		if id > maxid {
 			maxid = id
 		}
 	}
-	return maxid
+	 for i := 0; i< 128; i++{
+		row := strconv.Itoa(i)
+	 	for j :=0; j <8; j++{
+			col := strconv.Itoa(j)
+			val, seen := m[row+ " " + col]
+			if !seen && i > 10 && i < 110{
+				myid = val
+			}
+
+		}
+	}
+	return maxid, myid
 }
+
 
 func main() {
 	data := []string{"FBFBFBFRRL",
@@ -890,7 +910,7 @@ func main() {
 "FBBBBBFRLR",
 "BFFFBFBLRL",
 }
-maxid := maxID(data)
-fmt.Printf("max seat id is %d\n", maxid)
+maxid, myid := getIDs(data)
+fmt.Printf("max seat id is %d\nmy seat id is %d\n", maxid, myid)
 
 }
