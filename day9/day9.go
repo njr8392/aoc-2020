@@ -28,11 +28,12 @@ func findEncoding(s string) (int, int) {
 	return p1, p2
 }
 
-//part2 two find continguous set of at least 2 numbers
+//part2 find continguous set of at least 2 numbers
 func part2(nums []int, val int) int {
 	for i := 0; i < len(nums); i++ {
 		sum := 0
 		set := nums[i:]
+
 	findsum:
 		for j, num := range set {
 			sum += num
@@ -53,6 +54,7 @@ func part2(nums []int, val int) int {
 
 	return -1
 }
+
 func convStrArray(s []string) []int {
 	nums := make([]int, len(s))
 
@@ -67,16 +69,17 @@ func convStrArray(s []string) []int {
 	}
 	return nums
 }
-func sumPrev25(nums []int, num int, index int) bool {
-	last25 := make([]int, 25)
 
+func sumInPrev25(nums []int, num int, index int) bool {
+	last25 := make([]int, 25)
 	copy(last25, nums[index-25:index+1])
 
 	for i, n := range last25 {
 		for j, m := range last25 {
+
 			if i != j {
-				tmp := n + m
-				if tmp == num {
+				sum := n + m
+				if sum == num {
 					return true
 				}
 			}
