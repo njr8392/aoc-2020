@@ -15,7 +15,7 @@ func findEncoding(s string) (int, int) {
 	index := 0
 
 	for i := 25; i < len(nums); i++ {
-		if !sumPrev25(nums, nums[i], i) {
+		if !sumInPrev25(nums, nums[i], i) {
 
 			p1 = nums[i]
 			index = i
