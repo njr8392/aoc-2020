@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -25,6 +26,11 @@ func main() {
 		colorKey = colorKey[:2]
 		keystr = colorKey[0] + " " + colorKey[1]
 		children := strings.Split(bag[1], ",")
+		for _, chi := range children{
+			
+		n := regexp.MustCompile(`(.+) bags|bag`).MatchString(chi)
+		fmt.Println(n, chi)
+		}
 
 		for _, desc := range children {
 			var childstr string
@@ -38,9 +44,6 @@ func main() {
 
 	}
 
-	fmt.Println(m)
-	s := visit(m)
-	fmt.Println(len(s))
 }
 
 func visit(m map[string][]string) []string {
@@ -59,12 +62,10 @@ func visit(m map[string][]string) []string {
 	}
 
 	for key, val := range m {
-		for _, child := range val {
 			//going to the key i just checked, need to find where that key is a value and work from there
-			if strings.Contains(child, "shiny gold") {
-				visitAll(m[key])
+			if strings.Contains(key, "shiny gold") {
+				visitAll(val)
 			}
-		}
 	}
 
 	return contains
