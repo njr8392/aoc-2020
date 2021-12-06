@@ -1,49 +1,48 @@
 package main
 
 import (
-	"os"
-	"fmt"
 	"bytes"
+	"fmt"
 	"io"
+	"os"
 )
+
 const NSIZE = 12
 const FSIZE = 1000
 
-func main(){
+func main() {
 	data := ReadInput("input.txt")
-//	sepdata := bytes.Split(data, []byte{' '})
 	ans := solve(data)
 	fmt.Println(ans)
-	
+
 }
 
-func solve(data []byte)int{
-	gam := 0
-	ep :=0
-	for i:=0; i<NSIZE; i++{
-		count :=0
+func solve(data []byte) int {
+	var gam int
+	var ep int 
+	for i := 0; i < NSIZE; i++ {
+		count := 0
 		buf := bytes.NewBuffer(data)
 		for {
 			line, err := buf.ReadBytes('\n')
-			if err == io.EOF{
+			if err == io.EOF {
 				break
 			}
-			if err != nil{
+			if err != nil {
 				panic(err)
 			}
-			if line[len(line)-i-1] == '1'{
-				count++	
+			// only concerned with 0-11
+			if line[len(line)-i-2] == '1' {
+				count++
 			}
 		}
-		if count > FSIZE/2{
-			gam |= (1<<i)
-		} else{
-		
-		ep |= (1<<i)
-
+		if count > FSIZE/2 {
+			gam |= (1 << i)
+		}else {
+			ep |= (1<< i)
 		}
 	}
-	return gam*ep
+	return gam * ep
 }
 
 func ReadInput(file string) []byte {
@@ -60,4 +59,3 @@ func ReadInput(file string) []byte {
 	}
 	return buf
 }
-
