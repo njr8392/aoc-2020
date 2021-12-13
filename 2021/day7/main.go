@@ -20,7 +20,7 @@ func main() {
 	fmt.Println(min)
 }
 func MinFuel(nums []int) int {
-	var minfuel int = 0x0fffffffffffffff
+	var minfuel int = 1<<63-1
 	max := Max(nums)
 	for i := 0; i <= max; i++ {
 		tmp := 0
