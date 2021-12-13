@@ -28,7 +28,6 @@ func main() {
 		// split into vectors v1 = x1,y1 and v2 = x2,y2
 		v1 := bytes.Split(points[0], []byte(","))
 		v2 := bytes.Split(points[1], []byte(","))
-		fmt.Println(v2)
 
 		//set bytes to int to compare vals
 		x0 := ByteToInt(v1[0])
@@ -52,14 +51,32 @@ func main() {
 				set[point]++
 			}
 		}
+
+		//delete if this block for part1
+		if y0 != y1 && x0 != x1 {
+			rise, run := sign(y1-y0), sign(x1-x0)
+			for y0 != y1 && x0!=x1{
+				point := vector{x:x0,y:y0}
+				set[point]++
+				y0 +=rise
+				x0+=run
+			}
+		}
 	}
 	ans := CountSeen(set)
 	fmt.Println(ans)
 }
+func sign(x int)int{
+	if x < 0{
+		return -1
+	}
+	return 1
+}
+
 func CountSeen(m map[vector]int) int {
 	count := 0
 	for _, num := range m {
-		if num >= 2 {
+		if num >1  {
 			count++
 		}
 	}
