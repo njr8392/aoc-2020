@@ -16,22 +16,31 @@ func main() {
 	for _, b := range removecomas {
 		pos = append(pos, ByteToInt(b))
 	}
-	min := MinFuel(pos)
+	min := MinFuel(pos, abs)
+	part2 := MinFuel(pos, partialsum)
 	fmt.Println(min)
+	fmt.Println(part2)
 }
-func MinFuel(nums []int) int {
-	var minfuel int = 1<<63-1
+
+//part 1
+//Min fuel finds the steps for the "crabs" to align by executing the necessary function to solve part 1 and part2
+func MinFuel(nums []int, f func(int) int) int {
+	var minfuel int = 1<<63 - 1
 	max := Max(nums)
 	for i := 0; i <= max; i++ {
 		tmp := 0
 		for _, pos := range nums {
-			tmp += abs(pos - i)
+			tmp += f(pos - i)
 		}
 		if tmp < minfuel {
 			minfuel = tmp
 		}
 	}
 	return minfuel
+}
+func partialsum(x int) int {
+	x = abs(x)
+	return x * (x + 1) / 2
 }
 func Max(nums []int) int {
 	var max int
