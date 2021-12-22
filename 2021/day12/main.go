@@ -25,7 +25,49 @@ func main() {
 	// confirmed it is a directed graph
 	// problem is all set up now just need to figure out how to find all the paths
 	fmt.Println(len(seen))
+	paths := FindPaths(start)
+	fmt.Println(len(paths))
 }
+//DFS to walk all paths
+func FindPaths(head *Node) [][]string {
+	var find func(*Node, []string, bool) [][]string
+	find = func(n *Node, path []string,seen bool) [][]string {
+		if n.name == "end" {
+			path = append(path, n.name)
+			return [][]string{path}
+		}
+		if IsLower(n.name) {
+			for _, small := range path{            
+				if small == n.name{
+					if small == "start"{        //delete here to 61 for part1
+						return [][]string{}
+					}
+					if seen{
+						return [][]string{}
+					}
+					seen = true
+				}
+			}
+		}
+		paths := [][]string{}
+		path = append(path, n.name)
+		for _, child := range n.children {
+			paths = append(paths, find(child, path,seen)...)
+		}
+		return paths
+	}
+	return find(head, []string{}, false)
+}
+func IsLower(s string) bool {
+	for _, char := range s {
+		if char < 'a' {
+			return false
+		}
+	}
+	return true
+}
+
+//test for printing all nodes
 func visit(n *Node) map[*Node]bool {
 	var walk func(n *Node)
 	seen := make(map[*Node]bool)
@@ -35,7 +77,7 @@ func visit(n *Node) map[*Node]bool {
 			if seen[h] {
 				return
 			}
-			fmt.Printf("Node %p: %d\n", h, len(h.children))
+			fmt.Printf("Node %p %s: %d\n", h, h.name, len(h.children))
 			seen[h] = true
 			for _, node := range h.children {
 				walk(node)
