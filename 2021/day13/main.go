@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/njr8392/aoc/util"
 	"io"
+	"log"
 )
 
 //fold along y --- len(matrix)/2
@@ -12,29 +13,36 @@ import (
 func main() {
 	data := util.ReadInput("input.txt")
 	chart := bytes.Split(data, []byte("\n\n"))
+
+	// stupid hack
+	chart[0] = append(chart[0], '\n')
 	c, instruct := chart[0], chart[1]
+	splits := ParseInstruction(instruct)
 
 	set, err := SetPoints(c)
 	if err != nil {
 		fmt.Println(err)
 	}
-	grid := SetGrid(set)
-	fmt.Println(len(grid) - 447)
-	fmt.Println(instruct)
-
-	fold := Fold(grid, 655, "x")
-//	f := Fold(fold, 447,"y")
-//	fmt.Println(len(fold))
-	// count dots
-	count:=0
-	for i:=0; i< len(fold);i++{
-		for j:=0; j <len(fold[0]); j++{
-			if fold[i][j] == 1{
-			count++
+	grid := SetGrid(set) // to get part1 call fold once on grid
+	
+	//part2 
+	grid = Execute(splits, grid)
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			if grid[i][j] == 1 {
+				fmt.Print(".")
+			} else {
+				fmt.Print(" ")
 			}
 		}
+		fmt.Println()
 	}
-	fmt.Println(count)
+}
+func Execute(in []instruction, grid [][]int) [][]int {
+	for _, i := range in {
+		grid = Fold(grid, i.posistion, i.axis)
+	}
+	return grid
 }
 
 type point struct {
@@ -42,15 +50,15 @@ type point struct {
 }
 
 func Fold(grid [][]int, pos int, along string) [][]int {
+	fmt.Println(len(grid), len(grid[0]), along, pos)
 	if along == "y" {
-		new_grid := Grid(len(grid[0]), len(grid)/2) 
+		new_grid := Grid(len(grid[0]), len(grid)/2)
 		//fold on y.  clone the top half as is
 		for i := 0; i < pos; i++ {
 			for j := 0; j < len(grid[0]); j++ {
 				new_grid[i][j] |= grid[i][j]
 			}
 		}
-		fmt.Println(len(new_grid))
 		//work backwards  bottom left old = top left of new
 		for i := len(grid) - 1; i > pos; i-- {
 			for j := 0; j < len(grid[0]); j++ {
@@ -59,21 +67,20 @@ func Fold(grid [][]int, pos int, along string) [][]int {
 		}
 		return new_grid
 	}
-		new_grid := Grid(len(grid[0])/2, len(grid)) 
-		//fold on y.  clone the top half as is
-		for i := 0; i < len(grid); i++ {
-			for j := 0; j < pos; j++ {
-				new_grid[i][j] |= grid[i][j]
-			}
+	new_grid := Grid(len(grid[0])/2, len(grid))
+	//fold on y.  clone the top half as is
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < pos; j++ {
+			new_grid[i][j] |= grid[i][j]
 		}
-		fmt.Println(len("test"))
-		//work backwards  bottom left old = top left of new
-		for i := 0; i< len(grid); i++ {
-			for j := len(grid[0])-1; j > pos; j-- {
-				new_grid[i][len(grid[0])-j-1] |= grid[i][j]
-			}
+	}
+	//work backwards  top right old = top left of new
+	for i := 0; i < len(grid); i++ {
+		for j := len(grid[0]) - 1; j > pos; j-- {
+			new_grid[i][len(grid[0])-j-1] |= grid[i][j]
 		}
-		return new_grid
+	}
+	return new_grid
 
 }
 
@@ -94,6 +101,30 @@ func SetPoints(data []byte) ([]point, error) {
 		set = append(set, p)
 	}
 	return set, nil
+}
+
+type instruction struct {
+	axis      string
+	posistion int
+}
+
+func ParseInstruction(data []byte) []instruction {
+	var list []instruction
+	buf := bytes.NewBuffer(data)
+	for {
+		line, err := buf.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Fatal(err)
+		}
+		input := bytes.Split(line[:len(line)-1], []byte{' '})
+		instruct := bytes.Split(input[2], []byte{'='})
+		in := instruction{string(instruct[0]), ByteToInt(instruct[1])}
+		list = append(list, in)
+	}
+	return list
 }
 
 func Grid(x, y int) [][]int {
