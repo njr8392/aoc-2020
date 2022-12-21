@@ -17,7 +17,7 @@ func ReadInput(file string) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-	buf := make([]byte, info.Size())
+	buf := make([]byte, info.Size()-1)
 	_, err = f.Read(buf)
 	if err != nil && err != io.EOF {
 		log.Fatal(err)
