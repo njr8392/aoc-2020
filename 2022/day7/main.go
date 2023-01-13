@@ -14,8 +14,13 @@ func main() {
 	var start **dir = &d
 	data := bytes.Split(f, []byte("\n"))
 	parse(data, d)
-	fmt.Println(**start)
-	fmt.Println(sum(*start))
+	dirsize(*start)
+	less := finddirs(*start)
+	ttl :=0
+	for _, d := range less{
+		ttl += d.size
+	}
+	fmt.Println(ttl)
 }
 
 type file struct {
@@ -70,48 +75,25 @@ func parse(data [][]byte, state *dir) {
 }
 
 //identify the dir that is >100000 then sum all child directories
-func sum(root *dir) int{
-	ttl := 0
-	if root.child == nil {
-		return 0
+func finddirs(root *dir) []*dir{
+	var d []*dir	
+	if root.size <= 100000{
+		d = append(d, root)
 	}
-	for i, c := range root.child {
-		sum(c)
-		if ttl > 100000 && i == len(root.child) {
-			return ttl
-		}
-		for _, s := range c.f {
-			ttl += s.size
-			fmt.Println(ttl)
-		}
+
+	for _, x := range root.child{
+		d = append(d, finddirs(x)...)
 	}
-	return ttl
+	return d
 }
 
 func dirsize(root *dir) {
-	if root.child == nil {
-		return
-	}
+		for _, c := range root.f {
+			root.size += c.size
+		}
 	for _, r := range root.child {
 		dirsize(r)
-		tmp :=0
-		for _, c := range r.f {
-			tmp += c.size
-		}
-		root.size += tmp
+		root.size += r.size
 	}
 }
 
-func dfs(root *dir)int{
-	sum :=0
-	if root.size <= 100000{
-		sum += root.size
-	}
-	if root.child == nil {
-		return 0
-	}
-	for _, r := range root.child{
-		dfs(r)
-	}
-	return sum
-}
