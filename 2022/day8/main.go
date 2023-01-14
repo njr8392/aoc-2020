@@ -31,20 +31,20 @@ func numvis(d [][]byte) int {
 
 	}
 
-	return vis + (4* len(d))
+	return vis
 }
 
 func horz(b []byte) int {
 	var vis int
-	curtop := b[0]
-	for i := 1; i < len(b); i++ {
+	curtop := byte('0'-1)
+	for i := 0; i < len(b); i++ {
 		if b[i] > curtop {
 			vis++
 			curtop = b[i]
 		}
 	}
-	curtop = b[len(b)-1]
-	for i := len(b) - 2; i > len(b); i-- {
+	curtop = byte('0'-1)
+	for i := len(b) - 1; i > 0; i-- {
 		if b[i] > curtop {
 			vis++
 			curtop = b[i]
