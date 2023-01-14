@@ -16,11 +16,12 @@ func main() {
 	parse(data, d)
 	dirsize(*start)
 	less := finddirs(*start)
-	ttl :=0
-	for _, d := range less{
+	ttl := 0
+	for _, d := range less {
 		ttl += d.size
 	}
 	fmt.Println(ttl)
+	fmt.Println(del(*start))
 }
 
 type file struct {
@@ -75,25 +76,44 @@ func parse(data [][]byte, state *dir) {
 }
 
 //identify the dir that is >100000 then sum all child directories
-func finddirs(root *dir) []*dir{
-	var d []*dir	
-	if root.size <= 100000{
+func finddirs(root *dir) []*dir {
+	var d []*dir
+	if root.size <= 100000 {
 		d = append(d, root)
 	}
 
-	for _, x := range root.child{
+	for _, x := range root.child {
 		d = append(d, finddirs(x)...)
 	}
 	return d
 }
 
 func dirsize(root *dir) {
-		for _, c := range root.f {
-			root.size += c.size
-		}
+	for _, c := range root.f {
+		root.size += c.size
+	}
 	for _, r := range root.child {
 		dirsize(r)
 		root.size += r.size
 	}
 }
 
+//loop through dirsize and find the smallest dir to delete
+func del(root *dir) int {
+	space := 30000000- (70000000-root.size)
+	min := 1<<63-1
+	s := 0
+
+	var walk func(*dir)
+	walk = func(r *dir) {
+		if r.size >= space && r.size < min{
+			s = r.size
+			min = r.size
+		}
+		for _, c := range r.child {
+			walk(c)
+		}
+	}
+	walk(root)
+	return s
+}
