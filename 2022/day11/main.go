@@ -6,7 +6,11 @@ import (
 	"github.com/njr8392/aoc/util"
 	"strconv"
 )
-const ROUNDS =20 
+
+const ROUNDS = 10000
+//part 2 rounds needs to be 10,000
+//part 1 rounds needs to be 20
+
 type monkey struct {
 	n       int
 	items   []int
@@ -22,37 +26,46 @@ func main() {
 	input := util.ReadInput("input.txt")
 	data := parse(input)
 	p1(data)
-	
+
 }
 
-func p1(monks []*monkey){
-	for i:=0; i < ROUNDS; i++{
+func p1(monks []*monkey) {
+	fact :=1 // for part 2
 	for _, m := range monks{
-	 	for _, item := range m.items{
-			m.inspect++
-			num, err := strconv.Atoi(m.opnum)
-			if err != nil{
-				num = item
-			}
-			switch m.opstr{
+		fact *=m.test
+	} // for part 2
+	for i := 0; i < ROUNDS; i++ {
+		for _, m := range monks {
+			for _, item := range m.items {
+				m.inspect++
+				num, err := strconv.Atoi(m.opnum)
+				if err != nil {
+					num = item
+				}
+				switch m.opstr {
 				case "+":
 					item += num
 				case "*":
 					item *= num
-			}
+				}
 
-			item /= 3
-			if item % m.test == 0{
-				monks[m.iftrue].items = append(monks[m.iftrue].items, item)
-			}
+				//item /= 3 //only need for part 1
+				item %= fact //only need for part 2
+				if item%m.test == 0 {
+					monks[m.iftrue].items = append(monks[m.iftrue].items, item)
+				} else {
+					monks[m.iffalse].items = append(monks[m.iffalse].items, item)
 
+				}
+
+			}
+			m.items = m.items[:0]
 		}
 	}
-	}
-	for _, m := range monks{
+	for _, m := range monks {
+		//multiple the two highest numbers
 		fmt.Println(m.inspect)
 	}
-	fmt.Println(1540*1700)
 }
 
 func parse(b []byte) []*monkey {
@@ -95,4 +108,3 @@ func parse(b []byte) []*monkey {
 	}
 	return monks
 }
-
