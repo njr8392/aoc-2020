@@ -10,11 +10,11 @@ import (
 func main() {
 	input := util.ReadInput("input.txt")
 	data := parse(input)
-	s := p1(data)
+	s := solution(data)
 	fmt.Println(s)
 }
 
-func p1(ops []instruct) int {
+func solution(ops []instruct) int {
 	var q []int
 	cycle := 0
 	addr := 1
@@ -29,8 +29,20 @@ func p1(ops []instruct) int {
 		if (cycle+20)%40 == 0 && cycle <= 220 {
 			strength := addr * cycle
 			sum += strength
-			fmt.Println(cycle, strength, sum)
 		}
+		//p2
+		if cycle%40 == 1 {
+			fmt.Println()
+		}
+		col := (cycle - 1) % 40
+		switch addr {
+		case col - 1, col, col + 1:
+			fmt.Print("#")
+		default:
+			fmt.Print(".")
+		}
+		// end of p2
+
 		if i > len(ops)-1 {
 			continue
 		}
