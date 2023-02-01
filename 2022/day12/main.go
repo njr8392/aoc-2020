@@ -11,6 +11,7 @@ var (
 	dc []int = []int{0, 0, 1, -1}
 )
 
+
 const (
 	START = 'a'
 )
@@ -28,6 +29,8 @@ func main() {
 It adjust the starting posistion of the grid depending on the part of the problem to solve.
 For part 1, will we set the starting posistion to the posistion of 'S' and walking until 
 we arrive at 'E'. Adjusting for part 2, the start and end positions are flipped.
+The byte in the starting posistion must be adjusted to the relative height ('a' if we
+are starting at 'S' and 'z' if we are starting at 'Z')
 Once the posistion is set, path will walk by BFS and count the number of steps */
 func path(grid [][]byte, r, c int, end byte) int {
 	R := len(grid)    // Row bounds
