@@ -6,8 +6,10 @@ import (
 	"github.com/njr8392/aoc/util"
 )
 
-var dr []int = []int{-1, 1, 0, 0}
-var dc []int = []int{0, 0, 1, -1}
+var (
+	dr []int = []int{-1, 1, 0, 0}
+	dc []int = []int{0, 0, 1, -1}
+)
 
 func main() {
 	input := util.ReadInput("input.txt")
@@ -16,8 +18,8 @@ func main() {
 }
 
 func path(grid [][]byte) int {
-	R := len(grid)
-	C := len(grid[0])
+	R := len(grid)    // Row bounds
+	C := len(grid[0]) // Column bounds
 	var q []int
 	seen := make(map[[2]int]bool)
 	step := 0
@@ -26,20 +28,21 @@ func path(grid [][]byte) int {
 	r, c := FindStart(grid)
 	grid[r][c] = byte('a')
 
-	q = append(q, r, c)
+	q = append(q, r, c, 0)
 	seen[[2]int{r, c}] = true
 
 	for len(q) > 0 {
 		r = q[0]
 		c = q[1]
-		step++
+		step = q[2]
 		fmt.Println(r, c, string(grid[r][c]))
-		q = q[2:]
-		//get neighbors
+		q = q[3:]
+
 		if grid[r][c] == byte('E') {
 			return step
 		}
 
+		//get neighbors and check bounds
 		for i := 0; i < 4; i++ {
 			next_r := r + dr[i]
 			next_c := c + dc[i]
@@ -50,7 +53,6 @@ func path(grid [][]byte) int {
 			if next_c >= C || next_c < 0 {
 				continue
 			}
-			//		diff := abs(int(grid[r][c]) - int(grid[next_r][next_c]))
 
 			if grid[next_r][next_c] > grid[r][c]+1 {
 				continue
@@ -58,7 +60,7 @@ func path(grid [][]byte) int {
 
 			if !seen[[2]int{next_r, next_c}] {
 				seen[[2]int{next_r, next_c}] = true
-				q = append(q, next_r, next_c)
+				q = append(q, next_r, next_c, step+1)
 			}
 
 		}
@@ -76,11 +78,4 @@ func FindStart(b [][]byte) (int, int) {
 		}
 	}
 	return 0, 0
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return x * -1
-	}
-	return x
 }
