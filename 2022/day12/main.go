@@ -11,22 +11,36 @@ var (
 	dc []int = []int{0, 0, 1, -1}
 )
 
+const (
+	START = 'a'
+)
+
 func main() {
 	input := util.ReadInput("input.txt")
 	grid := bytes.Split(input, []byte("\n"))
-	fmt.Println(path(grid))
+	r, c := FindStart(grid)
+	fmt.Println(path(grid, r, c, 'E'))	//part 1
+	r, c = FindEnd(grid)
+	fmt.Println(path(grid, r, c, 'a'))	//part 2
 }
 
-func path(grid [][]byte) int {
+/* path will take the starting posistion and the byte that triggers the search to stop.
+It adjust the starting posistion of the grid depending on the part of the problem to solve.
+For part 1, will we set the starting posistion to the posistion of 'S' and walking until 
+we arrive at 'E'. Adjusting for part 2, the start and end positions are flipped.
+Once the posistion is set, path will walk by BFS and count the number of steps */
+func path(grid [][]byte, r, c int, end byte) int {
 	R := len(grid)    // Row bounds
 	C := len(grid[0]) // Column bounds
 	var q []int
 	seen := make(map[[2]int]bool)
 	step := 0
 
-	//find starting posistion
-	r, c := FindStart(grid)
+	//set the starting byte for the search
 	grid[r][c] = byte('a')
+	if end == START {
+		grid[r][c] = byte('z')
+	}
 
 	q = append(q, r, c, 0)
 	seen[[2]int{r, c}] = true
@@ -35,10 +49,9 @@ func path(grid [][]byte) int {
 		r = q[0]
 		c = q[1]
 		step = q[2]
-		fmt.Println(r, c, string(grid[r][c]))
 		q = q[3:]
 
-		if grid[r][c] == byte('E') {
+		if grid[r][c] == end {
 			return step
 		}
 
@@ -54,8 +67,16 @@ func path(grid [][]byte) int {
 				continue
 			}
 
-			if grid[next_r][next_c] > grid[r][c]+1 {
-				continue
+			//cannot walk where the next byte is greater than 1 from the previous byte
+			//checks are conditional dependent on the direction we are walking
+			if end == 'E' {
+				if grid[next_r][next_c] > grid[r][c]+1 {
+					continue
+				}
+			} else {
+				if grid[next_r][next_c]+1 < grid[r][c] {
+					continue
+				}
 			}
 
 			if !seen[[2]int{next_r, next_c}] {
@@ -73,6 +94,17 @@ func FindStart(b [][]byte) (int, int) {
 	for i := range b {
 		for j := range b[i] {
 			if b[i][j] == byte('S') {
+				return i, j
+			}
+		}
+	}
+	return 0, 0
+}
+
+func FindEnd(b [][]byte) (int, int) {
+	for i := range b {
+		for j := range b[i] {
+			if b[i][j] == byte('E') {
 				return i, j
 			}
 		}
